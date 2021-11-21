@@ -16,10 +16,12 @@
         <textarea id="value" rows="3" v-model.trim="message"></textarea>
       </div>
 
-      <button class="btn primary" :disabled="disabled">Добавить</button>
+      <app-button color="primary" :disabledProps="disabled">
+        Добавить
+      </app-button>
     </form>
 
-    <div class="card card-w70">
+    <div class="card card-w70 resume">
       <h3 v-if="dataBlock.length === 0">
         Добавьте первый блок, чтобы увидеть результат
       </h3>
@@ -27,21 +29,37 @@
       <div v-else v-for="(block, idx) in dataBlock" :key="idx">
         <component :is="componentName(idx)" :message="block.value"></component>
       </div>
+
+      <app-button
+        class="saveResume"
+        v-if="dataBlock.length !== 0"
+      >
+        Сохранить резюме
+      </app-button>
     </div>
   </div>
 
   <app-loader v-if="isLoader"></app-loader>
+
   <app-comments
     v-else-if="comments.length > 0"
     :commentsProps="comments"
   ></app-comments>
 
   <div class="container">
-    <p>
-      <button class="btn primary" @click="loadComments">
-        Загрузить комментарии
-      </button>
-    </p>
+    <app-button
+      v-if="comments.length === 0"
+      color="primary"
+      @action="loadComments"
+    >
+      Загрузить комментарии
+    </app-button>
+
+    <app-button
+      color="primary"
+    >
+      Показать резюме
+    </app-button>
   </div>
 </template>
 
@@ -52,6 +70,7 @@ import AppAvatar from './AppAvatar.vue'
 import AppText from './AppText.vue'
 import AppComments from './AppComments.vue'
 import AppLoader from './AppLoader.vue'
+import AppButton from './AppButton.vue'
 import axios from 'axios'
 
 export default {
@@ -101,7 +120,7 @@ export default {
   },
   computed: {
     disabled() {
-      return this.message.length < 4
+      return this.message.length < 4 ? true : false
     },
   },
   components: {
@@ -111,8 +130,21 @@ export default {
     AppText,
     AppComments,
     AppLoader,
+    AppButton,
   },
 }
 </script>
 
-<style></style>
+<style>
+.saveResume {
+  align-self: flex-end;
+  margin-top: 0;
+}
+
+.resume {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+</style>
