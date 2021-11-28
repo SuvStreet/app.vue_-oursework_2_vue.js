@@ -1,5 +1,5 @@
 <template>
-  <div class="card container">
+  <div class="card container marginTitle">
     <h2 class="title">Комментарии</h2>
   </div>
 
@@ -32,6 +32,10 @@ export default {
 </script>
 
 <style scoped>
+.marginTitle {
+  margin-top: 15px;
+}
+
 .title{
   margin: 0;
 }

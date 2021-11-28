@@ -1,39 +1,39 @@
 <template>
-  <div class="avatar">
-    <div class="circle">
-      <img
-        :src="message"
-      />
+  <div class="container avatarCard">
+    <div class="avatar">
+      <div class="circle">
+        <img :src="message" />
+      </div>
     </div>
+    <app-button color="danger" @click="$emit('removeBlockResume', )">
+      Удалить
+    </app-button>
   </div>
 </template>
 
 <script>
+import AppButton from './AppButton.vue'
+
 export default {
+  emits: ['removeBlockResume'],
   props: ['message'],
-  data() {},
+  components: {
+    AppButton,
+  },
 }
 </script>
 
 <style scoped>
+.avatarCard {
+  display: flex;
+  align-items: center;
+}
+
 .avatar {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.circle {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 1px solid #e6e6e6;
-}
-
-.avatar img {
-  width: 150px;
-  height: auto;
-  margin-top: -15%;
+  flex-basis: 90%;
 }
 </style>
 
