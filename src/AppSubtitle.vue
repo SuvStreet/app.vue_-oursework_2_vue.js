@@ -3,26 +3,19 @@
     <h2>
       {{ message }}
     </h2>
-    <app-button color="danger" @click="$emits('removeBlockResume')">
-      Удалить
-    </app-button>
+    <slot></slot>
   </div>
 </template>
 
 <script>
-import AppButton from './AppButton.vue'
 export default {
-  emits: ['removeBlockResume'],
   props: ['message'],
-  components: {
-    AppButton,
-  },
 }
 </script>
 
 <style scoped>
 h2 {
-  flex-basis: 75%;
+  flex-basis: 100%;
 }
 
 .subtitle {

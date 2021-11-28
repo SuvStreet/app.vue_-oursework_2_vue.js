@@ -2,6 +2,7 @@
 node_modules
 /dist
 package-lock.json
+vetur.config.js
 
 # local env files
 .env.local

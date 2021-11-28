@@ -3,21 +3,14 @@
     <p>
       {{ message }}
     </p>
-    <app-button color="danger" @click="$emit('removeBlockResume')">
-      Удалить
-    </app-button>
+    <slot></slot>
   </div>
 </template>
 
 <script>
-import AppButton from './AppButton.vue'
 
 export default {
-  emits: ['removeBlockResume'],
   props: ['message'],
-  components: {
-    AppButton,
-  },
 }
 </script>
 
@@ -26,10 +19,6 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-p {
-  flex-basis: 75%;
 }
 
 </style>

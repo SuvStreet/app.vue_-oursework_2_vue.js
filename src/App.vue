@@ -1,6 +1,6 @@
 <template>
   <div class="container column">
-    <form class="card card-w30" @submit.prevent="submit">
+    <form v-if="isCreate" class="card card-w30" @submit.prevent="submit">
       <div class="form-control">
         <label for="type">Тип блока</label>
         <select id="type" v-model="type">
@@ -21,6 +21,12 @@
       </app-button>
     </form>
 
+    <div v-else class="card card-w30">
+      <app-button class="container column" color="primary" @action="create">
+        Создать резюме
+      </app-button>
+    </div>
+
     <div class="card card-w70 resume">
       <h3 v-if="resume.length === 0">
         Добавьте первый блок, чтобы увидеть результат
@@ -28,42 +34,44 @@
 
       <div v-else>
         <component
-          v-for="{ id, type, message } in resume" :key="id"
+          v-for="{ id, type, message } in resume"
+          :key="id"
           :is="componentName(type)"
           :message="message"
-          @removeBlockResume="removeBlockResume(id)"
-        ></component>
+        >
+          <app-button 
+            v-if="isSave"
+            color="danger" 
+            @action="removeBlockResume(id)"
+          >
+            Удалить
+          </app-button>
+        </component>
       </div>
 
-      <app-button
-        class="saveResume"
-        v-if="resume.length !== 0"
-        @action="saveResume"
-      >
+      <app-button class="saveResume" v-if="isSave" @action="saveResume">
         Сохранить резюме
       </app-button>
     </div>
   </div>
 
-  <app-loader v-if="isLoader"></app-loader>
-
   <div class="container divLoad">
     <app-button
-      v-if="listComments.length === 0"
-      color="primary"
+      :color="isOpenComments ? 'danger' : 'primary'"
       @action="loadComments"
     >
-      Загрузить комментарии
+      {{ isOpenComments ? 'Закрыть комментарии' : 'Загрузить комментарии' }}
     </app-button>
 
     <app-button
-      color="primary"
-      v-if="listResume.length === 0"
+      :color="isOpenResume ? 'danger' : 'primary'"
       @action="loadListResume"
     >
-      Показать резюме
+      {{ isOpenResume ? 'Закрыть резюме' : 'Загрузить резюме' }}
     </app-button>
   </div>
+
+  <app-loader v-if="isLoader"></app-loader>
 
   <app-list-comments
     v-if="listComments.length > 0"
@@ -96,19 +104,28 @@ export default {
       type: 'title',
       message: '',
       resume: [],
-      blockResume: [],
-      isLoader: false,
       listComments: [],
       listResume: [],
-      idResume: null,
+      isOpenResume: false,
+      isOpenComments: false,
+      isSave: false,
+      isLoader: false,
+      isCreate: true,
     }
   },
   mounted() {
     this.loadResume()
   },
   methods: {
+    // =================================== ВЕРНУТЬ ТЕГ FORM ===================================
+    create() {
+        this.resume = []
+        this.loadResume()
+        this.isCreate = true
+    },
+    // =================================== СОЗДАЁМ БЛОК РЕЗЮМЕ ===================================
     async submit() {
-      await fetch(
+      const response = await fetch(
         `https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/resume.json`,
         {
           method: 'POST',
@@ -122,11 +139,20 @@ export default {
         }
       )
 
-      this.loadResume()
+      const firebaseData = await response.json()
+
+      this.resume.push({
+        id: firebaseData.name,
+        type: this.type,
+        message: this.message,
+      })
+
+      this.isSave = true
 
       this.type = 'title'
       this.message = ''
     },
+    // =================================== ЗАГРУЖАЕМ НЕ СОХРАНЁННОЕ РЕЗЮМЕ ===================================
     async loadResume() {
       try {
         const { data } = await axios.get(
@@ -138,6 +164,8 @@ export default {
             ...data[key],
           }
         })
+
+        this.isSave = true
       } catch (error) {
         console.log('Давайте составим резюме!')
       }
@@ -145,40 +173,72 @@ export default {
     componentName(value) {
       return 'app-' + value
     },
+    // =================================== ЗАГРУЖАЕМ СПИСОК КОММЕНТАРИЕВ ===================================
     async loadComments() {
-      if (this.listResume.length !== 0) {
+      if (!this.isOpenComments) {
         this.listResume = []
+        this.isOpenResume = false
+        this.isLoader = true
+
+        const { data } = await axios.get(
+          'https://jsonplaceholder.typicode.com/comments?_limit=41'
+        )
+
+        this.listComments = Object.keys(data).map((key) => {
+          return {
+            id: key,
+            ...data[key],
+          }
+        })
+
+        this.isOpenComments = true
+      } else {
+        this.listComments = []
+        this.isOpenComments = false
       }
+      this.isLoader = false
+    },
+    // =================================== ЗАГРУЖАЕМ СПИСОК РЕЗЮМЕ ===================================
+    async loadListResume() {
+      try {
+        if (!this.isOpenResume) {
+          this.listComments = []
+          this.isOpenComments = false
 
-      // запускаем картинку загрузки
-      this.isLoader = true
+          this.isLoader = true
 
-      const { data } = await axios.get(
-        'https://jsonplaceholder.typicode.com/comments?_limit=41'
-      )
+          const { data } = await axios.get(
+            'https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/save-resume.json'
+          )
 
-      //console.log(`data`, data)
-
-      // если данные есть, преобразовываем в нужный формат
-      this.listComments = Object.keys(data).map((key) => {
-        return {
-          id: key,
-          ...data[key],
+          this.listResume = Object.keys(data).map((key) => {
+            return {
+              id: key,
+              ...data[key],
+            }
+          })
+          this.isOpenResume = true
+        } else {
+          this.isOpenResume = false
+          this.listResume = []
         }
-      })
-
-      //console.log(`this.comments`, this.comments)
-
+      } catch (error) {
+        console.log('Сохраннённых резюме нет!')
+      }
       this.isLoader = false
     },
     // =================================== УДАЛЯЕМ ОПРЕДЕЛЁННЫЙ БЛОК РЕЗЮМЕ ===================================
     async removeBlockResume(id) {
+      this.resume = this.resume.filter((block) => block.id !== id)
 
-      console.log(`id`, id)
-      // await axios.delete(
-      //   `https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/resume/${id}.json`
-      // )
-      // this.resume = this.resume.filter((block) => block.id !== id)
+      if (this.isSave) {
+        await axios.delete(
+          `https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/resume/${id}.json`
+        )
+        if (this.resume.length === 0) {
+          this.isSave = false
+        }
+      }
     },
     // =================================== УДАЛЯЕМ РЕЗЮМЕ ===================================
     async removeResume(id) {
@@ -189,38 +249,8 @@ export default {
 
       if (this.resume.length > 0) {
         this.resume = []
+        this.isCreate = true
       }
-    },
-    // =================================== ЗАГРУЖАЕМ СПИСОК РЕЗЮМЕ ===================================
-    async loadListResume() {
-      if (this.listComments.length !== 0) {
-        this.listComments = []
-      }
-
-      this.isLoader = true
-
-      try {
-        const { data } = await axios.get(
-          'https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/save-resume.json'
-        )
-
-        this.listResume = Object.keys(data).map((key) => {
-          return {
-            id: key,
-            ...data[key],
-          }
-        })
-      } catch (error) {
-        console.log('Сохраннённых резюме нет!')
-      }
-
-      // this.listResume = data
-
-      // console.log(`data`, data)
-      // console.log(`newBlockResume`, newBlockResume)
-      // console.log(`list-resume`, this.listResume)
-
-      this.isLoader = false
     },
     // =================================== СОХРАНЯЕМ РЕЗЮМЕ ===================================
     async saveResume() {
@@ -240,35 +270,24 @@ export default {
 
       const firebaseData = await response.json()
 
-      if (this.listResume.length > 0) {
+      if (this.listResume.length !== 0) {
         this.listResume.push({
           id: firebaseData.name,
-          ...Object.keys(this.resume).map((key) => {
-            return {
-              id: key,
-              ...this.resume[key],
-            }
-          }),
+          ...this.resume,
         })
       }
 
+      this.isSave = false
       this.resume = []
     },
     // =================================== ПОКАЗЫВАЕМ ВЫБРАННОЕ РЕЗЮМЕ ===================================
-    async visibleResume(idx) {
-      const { data } = await axios.get(
-        `https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/save-resume/${idx}.json`
-      )
-      this.resume = Object.keys(data).map((key) => {
-        return {
-          id: key,
-          ...data[key],
-        }
-      })
+    visibleResume(idx) {
+      this.resume = Object.values(
+        this.listResume.find((resume) => resume.id === idx)
+      ).filter((key) => key !== idx)
 
-      // console.log(`idx`, idx)
-
-      // console.log(`data`, `https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/save-resume/-MpT4g8eSuVOwyZRn7Ed.json`)
+      this.isCreate = false
+      this.isSave = false
     },
   },
   computed: {

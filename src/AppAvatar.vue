@@ -5,21 +5,13 @@
         <img :src="message" />
       </div>
     </div>
-    <app-button color="danger" @click="$emit('removeBlockResume', )">
-      Удалить
-    </app-button>
+    <slot></slot>
   </div>
 </template>
 
 <script>
-import AppButton from './AppButton.vue'
-
 export default {
-  emits: ['removeBlockResume'],
   props: ['message'],
-  components: {
-    AppButton,
-  },
 }
 </script>
 

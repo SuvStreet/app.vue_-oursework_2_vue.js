@@ -85,6 +85,7 @@ h3 {
   outline: none;
   background: #fff;
   transition: all 0.22s;
+  flex-basis: 10%;
 }
 
 .btn:hover {

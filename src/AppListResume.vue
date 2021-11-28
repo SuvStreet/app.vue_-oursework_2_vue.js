@@ -39,7 +39,7 @@ export default {
       for (let i = 0; i < Object.keys(value).length; i++) {
         if (value[i].type === type) {
           return value[i].message
-        } else if (i > Object.keys(value).length) {
+        } else if (i === Object.keys(value).length - 1) {
           switch (type) {
             case 'avatar':
               return 'https://i2.wp.com/www.cssscript.com/wp-content/uploads/2020/12/Customizable-SVG-Avatar-Generator-In-JavaScript-Avataaars.js.png?fit=438%2C408&ssl=1'
@@ -51,28 +51,28 @@ export default {
         }
       }
     },
-    urlAvatar(value) {
-      for (let i = 0; i < Object.keys(value).length; i++) {
-        if (value[i].type === 'avatar') {
-          return value[i].message
-        } else if (i > Object.keys(value).length)
-          return 'https://i2.wp.com/www.cssscript.com/wp-content/uploads/2020/12/Customizable-SVG-Avatar-Generator-In-JavaScript-Avataaars.js.png?fit=438%2C408&ssl=1'
-      }
-    },
-    title(value) {
-      for (let i = 0; i < Object.keys(value).length; i++) {
-        if (value[i].type === 'title') {
-          return value[i].message
-        } else return 'Ваше имя'
-      }
-    },
-    text(value) {
-      for (let i = 0; i < Object.keys(value).length; i++) {
-        if (value[i].type === 'text') {
-          return value[i].message
-        } else return 'Описание вашего резюме'
-      }
-    },
+    // urlAvatar(value) {
+    //   for (let i = 0; i < Object.keys(value).length; i++) {
+    //     if (value[i].type === 'avatar') {
+    //       return value[i].message
+    //     } else if (i > Object.keys(value).length)
+    //       return 'https://i2.wp.com/www.cssscript.com/wp-content/uploads/2020/12/Customizable-SVG-Avatar-Generator-In-JavaScript-Avataaars.js.png?fit=438%2C408&ssl=1'
+    //   }
+    // },
+    // title(value) {
+    //   for (let i = 0; i < Object.keys(value).length; i++) {
+    //     if (value[i].type === 'title') {
+    //       return value[i].message
+    //     } else return 'Ваше имя'
+    //   }
+    // },
+    // text(value) {
+    //   for (let i = 0; i < Object.keys(value).length; i++) {
+    //     if (value[i].type === 'text') {
+    //       return value[i].message
+    //     } else return 'Описание вашего резюме'
+    //   }
+    // },
   },
   components: { AppButton },
 }
