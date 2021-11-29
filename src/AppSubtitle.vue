@@ -9,15 +9,17 @@
 
 <script>
 export default {
-  props: ['message'],
+  props: {
+    message: {
+      type: String,
+      required: false,
+      default: 'Ваше имя',
+    },
+  },
 }
 </script>
 
 <style scoped>
-h2 {
-  flex-basis: 100%;
-}
-
 .subtitle {
   display: flex;
   justify-content: space-between;

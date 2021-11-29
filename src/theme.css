@@ -26,6 +26,7 @@ ol,
 p,
 ul {
   line-height: 1.7;
+  margin: 10px 0;
 }
 
 a {
@@ -53,6 +54,8 @@ h2 {
   font-size: 1.65rem;
   padding-bottom: 0.3rem;
   border-bottom: 1px solid #eaecef;
+  flex-basis: 100%;
+  margin: 15px 0;
 }
 
 h3 {
@@ -306,6 +309,10 @@ h3 {
   left: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.35);
+}
+
+.margin-title {
+  margin-top: 15px;
 }
 
 .loader {

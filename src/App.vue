@@ -16,7 +16,7 @@
         <textarea id="value" rows="3" v-model.trim="message"></textarea>
       </div>
 
-      <app-button color="primary" :disabledProps="disabled">
+      <app-button color="primary" :disabled-props="disabled">
         Добавить
       </app-button>
     </form>

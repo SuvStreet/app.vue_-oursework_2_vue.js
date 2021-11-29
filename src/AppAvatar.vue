@@ -1,8 +1,8 @@
 <template>
-  <div class="container avatarCard">
+  <div class="container column">
     <div class="avatar">
       <div class="circle">
-        <img :src="message" />
+        <img :src="message" alt="avatar"/>
       </div>
     </div>
     <slot></slot>
@@ -11,13 +11,19 @@
 
 <script>
 export default {
-  props: ['message'],
+  props: {
+    message: {
+      type: String,
+      required: false,
+      default: 'https://i2.wp.com/www.cssscript.com/wp-content/uploads/2020/12/Customizable-SVG-Avatar-Generator-In-JavaScript-Avataaars.js.png?fit=438%2C408&ssl=1',
+    },
+  },
 }
 </script>
 
 <style scoped>
-.avatarCard {
-  display: flex;
+.column {
+  justify-content: center;
   align-items: center;
 }
 
@@ -28,8 +34,3 @@ export default {
   flex-basis: 90%;
 }
 </style>
-
-//
-https://cdn.dribbble.com/users/5592443/screenshots/14279501/drbl_pop_r_m_rick_4x.png
-//
-https://sun9-80.userapi.com/impg/0nQA12FuBusMcRE5uG8Fs_JOQF_-WjuMVBjuOg/1nrBNK-Zlyw.jpg?size=720x1080&quality=96&sign=9d72d4f0f1bd5c07d92fbb84a2204040&type=album

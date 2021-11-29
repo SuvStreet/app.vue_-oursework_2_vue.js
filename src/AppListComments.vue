@@ -1,5 +1,5 @@
 <template>
-  <div class="card container marginTitle">
+  <div class="card container margin-title">
     <h2 class="title">Комментарии</h2>
   </div>
 
@@ -10,7 +10,7 @@
   >
     <ul class="list">
       <li class="list-item">
-        <div>
+        <div style="flexbasis: 100%">
           <div class="person">
             <div class="avatar"></div>
             <small class="namePerson">{{ name }}</small>
@@ -27,16 +27,17 @@
 
 <script>
 export default {
-  props: ['commentsProps'],
+  props: {
+    commentsProps: {
+      type: Array,
+      required: true,
+    },
+  },
 }
 </script>
 
 <style scoped>
-.marginTitle {
-  margin-top: 15px;
-}
-
-.title{
+.title {
   margin: 0;
 }
 
