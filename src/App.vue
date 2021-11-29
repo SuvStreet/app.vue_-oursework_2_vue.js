@@ -22,7 +22,11 @@
     </form>
 
     <div v-else class="card card-w30">
-      <app-button class="container column" color="primary" @action="create">
+      <app-button 
+        class="container column" 
+        color="primary" 
+        @action="create"
+      >
         Создать резюме
       </app-button>
     </div>
@@ -39,9 +43,9 @@
           :is="componentName(type)"
           :message="message"
         >
-          <app-button 
+          <app-button
             v-if="isSave"
-            color="danger" 
+            color="danger"
             @action="removeBlockResume(id)"
           >
             Удалить
@@ -55,21 +59,12 @@
     </div>
   </div>
 
-  <div class="container divLoad">
-    <app-button
-      :color="isOpenComments ? 'danger' : 'primary'"
-      @action="loadComments"
-    >
-      {{ isOpenComments ? 'Закрыть комментарии' : 'Загрузить комментарии' }}
-    </app-button>
-
-    <app-button
-      :color="isOpenResume ? 'danger' : 'primary'"
-      @action="loadListResume"
-    >
-      {{ isOpenResume ? 'Закрыть резюме' : 'Загрузить резюме' }}
-    </app-button>
-  </div>
+  <app-load
+    @loadListComments="loadListComments"
+    @loadListResume="loadListResume"
+    :isOpenComments="isOpenComments"
+    :isOpenResume="isOpenResume"
+  ></app-load>
 
   <app-loader v-if="isLoader"></app-loader>
 
@@ -95,6 +90,7 @@ import AppListComments from './AppListComments.vue'
 import AppLoader from './AppLoader.vue'
 import AppButton from './AppButton.vue'
 import AppListResume from './AppListResume.vue'
+import AppLoad from './AppLoad.vue'
 
 import axios from 'axios'
 
@@ -119,9 +115,9 @@ export default {
   methods: {
     // =================================== ВЕРНУТЬ ТЕГ FORM ===================================
     create() {
-        this.resume = []
-        this.loadResume()
-        this.isCreate = true
+      this.resume = []
+      this.loadResume()
+      this.isCreate = true
     },
     // =================================== СОЗДАЁМ БЛОК РЕЗЮМЕ ===================================
     async submit() {
@@ -174,14 +170,14 @@ export default {
       return 'app-' + value
     },
     // =================================== ЗАГРУЖАЕМ СПИСОК КОММЕНТАРИЕВ ===================================
-    async loadComments() {
+    async loadListComments() {
       if (!this.isOpenComments) {
         this.listResume = []
         this.isOpenResume = false
         this.isLoader = true
 
         const { data } = await axios.get(
-          'https://jsonplaceholder.typicode.com/comments?_limit=41'
+          'https://jsonplaceholder.typicode.com/comments?_limit=0'
         )
 
         this.listComments = Object.keys(data).map((key) => {
@@ -304,6 +300,7 @@ export default {
     AppLoader,
     AppButton,
     AppListResume,
+    AppLoad,
   },
 }
 </script>
@@ -318,9 +315,5 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-}
-
-.divLoad {
-  margin-bottom: 10px;
 }
 </style>
