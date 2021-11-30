@@ -1,8 +1,4 @@
 <template>
-  <div class="card container margin-title">
-    <h2 class="title">Комментарии</h2>
-  </div>
-
   <div
     class="card container"
     v-for="{ id, email, body, name } in commentsProps"

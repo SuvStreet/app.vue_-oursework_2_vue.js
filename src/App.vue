@@ -22,11 +22,7 @@
     </form>
 
     <div v-else class="card card-w30">
-      <app-button 
-        class="container column" 
-        color="primary" 
-        @action="create"
-      >
+      <app-button class="container column" color="primary" @action="create">
         Создать резюме
       </app-button>
     </div>
@@ -79,6 +75,8 @@
     @visibleResume="visibleResume"
     @removeResume="removeResume"
   ></app-list-resume>
+
+  <app-toast :toast="toast"></app-toast>
 </template>
 
 <script>
@@ -91,6 +89,7 @@ import AppLoader from './AppLoader.vue'
 import AppButton from './AppButton.vue'
 import AppListResume from './AppListResume.vue'
 import AppLoad from './AppLoad.vue'
+import AppToast from './AppToast.vue'
 
 import axios from 'axios'
 
@@ -107,6 +106,7 @@ export default {
       isSave: false,
       isLoader: false,
       isCreate: true,
+      toast: null,
     }
   },
   mounted() {
@@ -154,6 +154,7 @@ export default {
         const { data } = await axios.get(
           'https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/resume.json'
         )
+
         this.resume = Object.keys(data).map((key) => {
           return {
             id: key,
@@ -163,7 +164,11 @@ export default {
 
         this.isSave = true
       } catch (error) {
-        console.log('Давайте составим резюме!')
+        this.toast = {
+          title: 'Ошибка',
+          text: error.message,
+          type: 'error',
+        }
       }
     },
     componentName(value) {
@@ -177,7 +182,7 @@ export default {
         this.isLoader = true
 
         const { data } = await axios.get(
-          'https://jsonplaceholder.typicode.com/comments?_limit=0'
+          'https://jsonplaceholder.typicode.com/comments?_limit=41'
         )
 
         this.listComments = Object.keys(data).map((key) => {
@@ -301,6 +306,7 @@ export default {
     AppButton,
     AppListResume,
     AppLoad,
+    AppToast,
   },
 }
 </script>
