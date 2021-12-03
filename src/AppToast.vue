@@ -70,6 +70,17 @@ export default {
   overflow: hidden;
   pointer-events: none;
 }
+
+@media (max-width: 450px) {
+  .wrapper {
+    width: 320px;
+    padding: 20px 10px;
+  }
+  .container-2 {
+    padding-left: 10px;
+  }
+}
+
 .wrapper .show-toast {
   transform: translateX(0);
   pointer-events: all;

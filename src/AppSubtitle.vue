@@ -25,4 +25,10 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
+
+@media (max-width: 700px) {
+  .subtitle {
+    flex-direction: column;
+  }
+}
 </style>

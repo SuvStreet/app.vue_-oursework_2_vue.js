@@ -4,19 +4,21 @@
       <h4>
         {{ isOpenTitle() }}
       </h4>
-      <app-button
-        @action="$emit('loadListComments')"
-        :color="isOpenComments ? 'danger' : ''"
-      >
-        {{ isOpenComments ? 'Закрыть комментарии' : 'Загрузить комментарии' }}
-      </app-button>
+      <div class="groupBtn">
+        <app-button
+          @action="$emit('loadListComments')"
+          :color="isOpenComments ? 'danger' : ''"
+        >
+          {{ isOpenComments ? 'Закрыть комментарии' : 'Загрузить комментарии' }}
+        </app-button>
 
-      <app-button
-        @action="$emit('loadListResume')"
-        :color="isOpenResume ? 'danger' : ''"
-      >
-        {{ isOpenResume ? 'Закрыть резюме' : 'Загрузить резюме' }}
-      </app-button>
+        <app-button
+          @action="$emit('loadListResume')"
+          :color="isOpenResume ? 'danger' : ''"
+        >
+          {{ isOpenResume ? 'Закрыть резюме' : 'Загрузить резюме' }}
+        </app-button>
+      </div>
     </div>
   </div>
 </template>

@@ -277,7 +277,7 @@ h3 {
   color: #222;
 }
 
-.circle{
+.circle {
   height: 100px;
   width: 100px;
   border-radius: 50%;
@@ -388,5 +388,38 @@ h3 {
   100% {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 700px) {
+  .container.column {
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .card.card-w30 {
+    width: 100%;
+    margin-right: 0;
+  }
+  .card.card-w70 {
+    width: 100%;
+  }
+  .resume .btn{
+    margin: 10px 0;
+  }
+  .text {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 550px) {
+  .groupBtn button, .saveResume {
+    width: 100%;
+  }
+  .groupBtn button:first-child {
+    margin-bottom: 10px;
+  }
+  .list-item {
+    flex-direction: column;
   }
 }

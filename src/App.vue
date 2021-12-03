@@ -8,7 +8,6 @@
           <option value="subtitle">Подзаголовок</option>
           <option value="avatar">Аватар</option>
           <option value="text">Текст</option>
-          <option value="link">Ссылка</option>
         </select>
       </div>
 

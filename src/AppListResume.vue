@@ -79,9 +79,16 @@ export default {
 
 .information-person {
   flex-basis: 70%;
+  margin: 0 10px;
 }
 
-.btn {
-  margin-left: 10px;
+.list-item .btn {
+  margin-right: 0;
+}
+
+@media (max-width: 700px) {
+  .information-person .subtitle, .information-person .text {
+    flex-direction: row;
+  }
 }
 </style>

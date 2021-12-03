@@ -22,8 +22,14 @@ h1 {
   text-align: center;
 }
 
-.container .column {
+.container.column {
   justify-content: space-between;
   align-items: center;
+}
+
+@media (max-width: 700px) {
+  .container.column {
+    justify-content: center;
+  }
 }
 </style>
