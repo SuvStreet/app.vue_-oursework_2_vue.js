@@ -1,5 +1,5 @@
 <template>
-  <div class="card center">
+  <div class="container card center">
     <div>
       <h4>
         {{ isOpenTitle() }}

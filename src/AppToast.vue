@@ -1,12 +1,12 @@
 <template>
-  <div class="wrapper" v-if="toast">
-    <div :class="['toast', toast.type, { 'show-toast': isOpenToast }]">
+  <div class="wrapper">
+    <div :class="['toast', newToast.type, { 'show-toast': isOpenToast }]">
       <div class="container-1">
         <i :class="toastType"></i>
       </div>
       <div class="container-2">
-        <p>{{ toast.title }}</p>
-        <p>{{ toast.text }}</p>
+        <p>{{ newToast.title }}</p>
+        <p>{{ newToast.text }}</p>
       </div>
       <button @click="closeToast">&times;</button>
     </div>
@@ -20,31 +20,41 @@ export default {
     return {
       time: 0,
       isOpenToast: false,
+      newToast: {},
     }
-  },
-  mounted() {
-    setTimeout(() => {
-      this.showToast()
-    }, 200)
   },
   methods: {
     showToast() {
+      this.newToast = this.toast
       this.isOpenToast = true
       this.time = setTimeout(() => {
         this.closeToast()
       }, 7000)
     },
     closeToast() {
-      console.log(`closeToast`)
       this.isOpenToast = false
       clearTimeout(this.time)
     },
   },
   computed: {
     toastType() {
-      return this.toast.type === 'success'
-        ? 'fas fa-check-circle'
-        : 'fas fa-times-circle'
+      if (this.newToast.type === 'success') {
+        return 'fas fa-check-circle'
+      } else if (this.newToast.type === 'error') {
+        return 'fas fa-times-circle'
+      } else {
+        return 'fas fa-info-circle'
+      }
+    },
+  },
+  watch: {
+    toast() {
+      if (this.isOpenToast) {
+        this.closeToast()
+        setTimeout(() => {
+          this.showToast()
+        }, 1000)
+      } else this.showToast()
     },
   },
 }
@@ -52,15 +62,17 @@ export default {
 
 <style scoped>
 .wrapper {
+  position: fixed;
   width: 420px;
   padding: 30px 20px;
-  position: absolute;
   bottom: 50px;
   right: 0;
   overflow: hidden;
+  pointer-events: none;
 }
 .wrapper .show-toast {
   transform: translateX(0);
+  pointer-events: all;
 }
 .toast {
   width: 100%;
@@ -90,6 +102,12 @@ export default {
 .error i {
   color: #ff355b;
 }
+.info {
+  border-left: 8px solid #6a45ff;
+}
+.info i {
+  color: #6a45ff;
+}
 .container-1,
 container-2 {
   align-self: center;
@@ -107,6 +125,7 @@ container-2 {
   margin: 0;
 }
 .toast button {
+  pointer-events: all;
   align-self: flex-start;
   background-color: transparent;
   border: none;
