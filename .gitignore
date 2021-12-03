@@ -3,6 +3,7 @@ node_modules
 /dist
 package-lock.json
 vetur.config.js
+firebase-debug.log
 
 # local env files
 .env.local
