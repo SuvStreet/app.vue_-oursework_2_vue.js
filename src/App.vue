@@ -366,7 +366,6 @@ export default {
       this.isCreate = false
       this.isSave = false
     },
-    upload() {},
   },
   computed: {
     disabled() {
