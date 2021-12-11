@@ -1,6 +1,6 @@
 <template>
-  <div class="container column">
-    <h1>{{ message }}</h1>
+  <div class="card-w100">
+    <h1 class="h1-center">{{ message }}</h1>
     <slot></slot>
   </div>
 </template>
@@ -10,21 +10,16 @@ export default {
   props: {
     message: {
       type: String,
-      required: true,
-    },
-  },
+      default: 'Ваш title!'
+    }
+  }
 }
 </script>
 
 <style scoped>
-h1 {
+.h1-center {
   flex-basis: 100%;
   text-align: center;
-}
-
-.container.column {
-  justify-content: space-between;
-  align-items: center;
 }
 
 @media (max-width: 700px) {

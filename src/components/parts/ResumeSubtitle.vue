@@ -1,8 +1,8 @@
 <template>
-  <div class="text">
-    <p>
+  <div class="card-w100">
+    <h2>
       {{ message }}
-    </p>
+    </h2>
     <slot></slot>
   </div>
 </template>
@@ -13,16 +13,17 @@ export default {
     message: {
       type: String,
       required: false,
-      default: 'Описание вашего резюме',
+      default: 'Ваше имя',
     },
   },
 }
 </script>
 
 <style scoped>
-.text {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+@media (max-width: 550px) {
+  h2 {
+    width: 100%;
+    text-align: center;
+  }
 }
 </style>

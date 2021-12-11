@@ -2,38 +2,38 @@
   <div class="card container" v-for="{ id, ...value } in resumeProps" :key="id">
     <ul class="list">
       <li class="list-item">
-        <app-avatar
+        <resume-avatar
           :message="dataResume(value, 'avatar')"
-          @click="$emit('visibleResume', id)"
+          @click="visibleResume(value)"
           class="clickEffect"
-        ></app-avatar>
+        ></resume-avatar>
         <div class="information-person">
-          <app-subtitle :message="dataResume(value, 'title')"></app-subtitle>
-          <app-text :message="dataResume(value, 'text')"></app-text>
+          <resume-subtitle
+            :message="dataResume(value, 'title')"
+          ></resume-subtitle>
+          <resume-text :message="dataResume(value, 'text')"></resume-text>
         </div>
-        <app-button color="danger" @click="$emit('removeResume', id)">
+        <base-button color="danger" @click="$emit('removeResume', id)">
           Удалить
-        </app-button>
+        </base-button>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
-import AppButton from './AppButton.vue'
-import AppAvatar from './AppAvatar.vue'
-import AppText from './AppText.vue'
-import AppSubtitle from './AppSubtitle.vue'
+import BaseButton from '../BaseButton.vue'
+import ResumeAvatar from '../parts/ResumeAvatar.vue'
+import ResumeText from '../parts/ResumeText.vue'
+import ResumeSubtitle from '../parts/ResumeSubtitle.vue'
 
 export default {
   emits: {
-    visibleResume(id) {
-      if (id) {
+    resume(obj) {
+      if (obj) {
         return true
       }
-      console.warn(
-        'Не передан "id" "visibleResume" в компоненте "AppListResume"'
-      )
+      console.warn('Не передан "obj" "resume" в компоненте "AppListResume"')
       return false
     },
     removeResume(id) {
@@ -52,11 +52,6 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      regex: /^https?:\/\/.*(jpe?g|gif|png)/,
-    }
-  },
   methods: {
     dataResume(value, type) {
       for (let i = 0; i < Object.keys(value).length; i++) {
@@ -65,8 +60,18 @@ export default {
         }
       }
     },
+    visibleResume(obj) {
+      this.$emit(
+        'resume',
+        Object.keys(obj).map((key) => {
+          return {
+            ...obj[key],
+          }
+        }),
+      )
+    },
   },
-  components: { AppButton, AppAvatar, AppText, AppSubtitle },
+  components: { BaseButton, ResumeAvatar, ResumeText, ResumeSubtitle },
 }
 </script>
 
@@ -78,17 +83,11 @@ export default {
 }
 
 .information-person {
-  flex-basis: 70%;
+  width: 100%;
   margin: 0 10px;
 }
 
 .list-item .btn {
   margin-right: 0;
-}
-
-@media (max-width: 700px) {
-  .information-person .subtitle, .information-person .text {
-    flex-direction: row;
-  }
 }
 </style>

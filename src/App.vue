@@ -1,104 +1,60 @@
 <template>
   <div class="container column">
-    <form v-if="isCreate" class="card card-w30" @submit.prevent="checkType">
-      <div class="form-control">
-        <label for="type">Тип блока</label>
-        <select id="type" v-model="type">
-          <option value="title">Заголовок</option>
-          <option value="subtitle">Подзаголовок</option>
-          <option value="avatar">Аватар</option>
-          <option value="text">Текст</option>
-        </select>
-      </div>
+    <resume-form
+      :isCreateProps="isCreate"
+      @block-added="addBlock"
+      @toast="openToast"
+      @submit="submit"
+      @onCreate="create"
+    ></resume-form>
 
-      <div class="form-control">
-        <label for="value">Значение</label>
-        <textarea id="value" rows="3" v-model.trim="message"></textarea>
-      </div>
-
-      <app-button color="primary" :disabled-props="disabled">
-        Добавить
-      </app-button>
-    </form>
-
-    <div v-else class="card card-w30">
-      <app-button class="container column" color="primary" @action="create">
-        Создать резюме
-      </app-button>
-    </div>
-
-    <div class="card card-w70 resume">
-      <h3 v-if="resume.length === 0">
-        Добавьте первый блок, чтобы увидеть результат
-      </h3>
-
-      <div v-else>
-        <component
-          v-for="{ id, type, message } in resume"
-          :key="id"
-          :is="componentName(type)"
-          :message="message"
-        >
-          <app-button
-            v-if="isSave"
-            color="danger"
-            @action="removeBlockResume(id)"
-          >
-            Удалить
-          </app-button>
-        </component>
-      </div>
-
-      <app-button class="saveResume" v-if="isSave" @action="saveResume">
-        Сохранить резюме
-      </app-button>
-    </div>
+    <resume-view
+      :blocks="blocks"
+      :isSave="isSave"
+      @saveResume="saveResume"
+      @removeBlock="removeBlock"
+    ></resume-view>
   </div>
 
-  <app-load
+  <list-group-button
     @loadListComments="loadListComments"
     @loadListResume="loadListResume"
     :isOpenComments="isOpenComments"
     :isOpenResume="isOpenResume"
-  ></app-load>
+  ></list-group-button>
 
   <app-loader v-if="isLoader"></app-loader>
 
-  <app-list-comments
-    v-if="listComments.length > 0"
+  <list-comments
+    v-if="listComments.length"
     :commentsProps="listComments"
-  ></app-list-comments>
+  ></list-comments>
 
-  <app-list-resume
-    v-if="listResume.length > 0"
+  <list-resume
+    v-if="listResume.length"
     :resumeProps="listResume"
-    @visibleResume="visibleResume"
+    @resume="visibleResume"
     @removeResume="removeResume"
-  ></app-list-resume>
+  ></list-resume>
 
   <app-toast :toast="toast" @close="toast = {}"></app-toast>
 </template>
 
 <script>
-import AppTitle from './AppTitle.vue'
-import AppSubtitle from './AppSubtitle.vue'
-import AppAvatar from './AppAvatar.vue'
-import AppText from './AppText.vue'
-import AppListComments from './AppListComments.vue'
 import AppLoader from './AppLoader.vue'
-import AppButton from './AppButton.vue'
-import AppListResume from './AppListResume.vue'
-import AppLoad from './AppLoad.vue'
 import AppToast from './AppToast.vue'
+import ListGroupButton from './components/list/ListGroupButton.vue'
+import ListComments from './components/list/ListComments.vue'
+import ListResume from './components/list/ListResume.vue'
+import ResumeForm from './components/ResumeForm.vue'
+import ResumeView from './components/ResumeView.vue'
 
 import axios from 'axios'
 
 export default {
   data() {
     return {
-      type: 'title',
-      message: '',
-      resume: [],
+      blocks: [],
       listComments: [],
       listResume: [],
       isOpenResume: false,
@@ -107,35 +63,26 @@ export default {
       isLoader: false,
       isCreate: true,
       toast: {},
-      regex: /^https?:\/\/.*(jpe?g|gif|png)/,
     }
   },
   mounted() {
     this.loadResume()
   },
   methods: {
-    // =================================== ПРОВЕРКА КОРРЕКТНОГО URL КАРТИНКИ ===================================
-    checkType() {
-      if (this.type === 'avatar') {
-        this.regex.test(this.message)
-          ? this.submit()
-          : (this.toast = {
-              title: 'Информация',
-              text: 'Укажите правильный URL аватара',
-              type: 'info',
-            })
-      } else {
-        this.submit()
-      }
+    addBlock(block) {
+      this.blocks.push(block)
+    },
+    openToast(value) {
+      this.toast = value
     },
     // =================================== ВЕРНУТЬ ТЕГ FORM ===================================
     create() {
-      this.resume = []
+      this.blocks = []
       this.loadResume()
       this.isCreate = true
     },
     // =================================== СОЗДАЁМ БЛОК РЕЗЮМЕ ===================================
-    async submit() {
+    async submit(type, message) {
       try {
         const response = await fetch(
           `https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/resume.json`,
@@ -145,24 +92,21 @@ export default {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              type: this.type,
-              message: this.message,
+              type,
+              message,
             }),
           }
         )
 
         const firebaseData = await response.json()
 
-        this.resume.push({
+        this.blocks.push({
           id: firebaseData.name,
-          type: this.type,
-          message: this.message,
+          type,
+          message,
         })
 
         this.isSave = true
-
-        this.type = 'title'
-        this.message = ''
       } catch (error) {
         this.toast = {
           title: 'Ошибка',
@@ -174,11 +118,9 @@ export default {
     // =================================== ЗАГРУЖАЕМ НЕ СОХРАНЁННОЕ РЕЗЮМЕ ===================================
     async loadResume() {
       try {
-        const { data } = await axios.get(
-          'https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/resume.json'
-        )
+        const { data } = await axios.get(process.env.VUE_APP_URL_RESUME)
 
-        this.resume = Object.keys(data).map((key) => {
+        this.blocks = Object.keys(data).map((key) => {
           return {
             id: key,
             ...data[key],
@@ -193,10 +135,6 @@ export default {
           type: 'error',
         }
       }
-    },
-    // =================================== СОЗДАНИЕ ДИНАМИЧЕСКОГО КОМПОНЕНТА ===================================
-    componentName(value) {
-      return 'app-' + value
     },
     // =================================== ЗАГРУЖАЕМ СПИСОК КОММЕНТАРИЕВ ===================================
     async loadListComments() {
@@ -241,9 +179,7 @@ export default {
 
           this.isLoader = true
 
-          const { data } = await axios.get(
-            'https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/save-resume.json'
-          )
+          const { data } = await axios.get(process.env.VUE_APP_URL_SAVE_RESUME)
 
           this.listResume = Object.keys(data).map((key) => {
             return {
@@ -266,15 +202,15 @@ export default {
       this.isLoader = false
     },
     // =================================== УДАЛЯЕМ ОПРЕДЕЛЁННЫЙ БЛОК РЕЗЮМЕ ===================================
-    async removeBlockResume(id) {
+    async removeBlock(id) {
       try {
-        this.resume = this.resume.filter((block) => block.id !== id)
+        this.blocks = this.blocks.filter((block) => block.id !== id)
 
         if (this.isSave) {
           await axios.delete(
             `https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/resume/${id}.json`
           )
-          if (this.resume.length === 0) {
+          if (this.blocks.length === 0) {
             this.isSave = false
           }
         }
@@ -289,11 +225,11 @@ export default {
     // =================================== УДАЛЯЕМ РЕЗЮМЕ ===================================
     async removeResume(id) {
       try {
-        const resumeId = this.listResume.find((resume) => resume.id === id)
+        const resumeId = this.listResume.find((blocks) => blocks.id === id)
         await axios.delete(
           `https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/save-resume/${id}.json`
         )
-        this.listResume = this.listResume.filter((resume) => resume.id !== id)
+        this.listResume = this.listResume.filter((blocks) => blocks.id !== id)
 
         this.toast = {
           title: 'Успешно',
@@ -301,8 +237,8 @@ export default {
           type: 'success',
         }
 
-        if (this.resume.length > 0) {
-          this.resume = []
+        if (this.blocks.length > 0) {
+          this.blocks = []
           this.isCreate = true
         }
       } catch (error) {
@@ -326,7 +262,7 @@ export default {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(this.resume),
+            body: JSON.stringify(this.blocks),
           }
         )
 
@@ -335,7 +271,7 @@ export default {
         if (this.listResume.length !== 0) {
           this.listResume.push({
             id: firebaseData.name,
-            ...this.resume,
+            ...this.blocks,
           })
         }
 
@@ -348,7 +284,7 @@ export default {
         }
 
         this.isSave = false
-        this.resume = []
+        this.blocks = []
       } catch (error) {
         this.toast = {
           title: 'Что-то пошло не так....',
@@ -358,44 +294,21 @@ export default {
       }
     },
     // =================================== ПОКАЗЫВАЕМ ВЫБРАННОЕ РЕЗЮМЕ ===================================
-    visibleResume(idx) {
-      this.resume = Object.values(
-        this.listResume.find((resume) => resume.id === idx)
-      ).filter((key) => key !== idx)
+    visibleResume(obj) {
+      this.blocks = obj
 
       this.isCreate = false
       this.isSave = false
     },
   },
-  computed: {
-    disabled() {
-      return this.message.length < 4 ? true : false
-    },
-  },
   components: {
-    AppTitle,
-    AppSubtitle,
-    AppAvatar,
-    AppText,
-    AppListComments,
     AppLoader,
-    AppButton,
-    AppListResume,
-    AppLoad,
     AppToast,
+    ResumeForm,
+    ResumeView,
+    ListGroupButton,
+    ListComments,
+    ListResume,
   },
 }
 </script>
-
-<style>
-.saveResume {
-  align-self: flex-end;
-  margin-top: 0;
-}
-
-.resume {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-</style>

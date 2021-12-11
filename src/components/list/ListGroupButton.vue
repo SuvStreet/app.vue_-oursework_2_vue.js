@@ -5,26 +5,26 @@
         {{ isOpenTitle() }}
       </h4>
       <div class="groupBtn">
-        <app-button
+        <base-button
           @action="$emit('loadListComments')"
           :color="isOpenComments ? 'danger' : ''"
         >
           {{ isOpenComments ? 'Закрыть комментарии' : 'Загрузить комментарии' }}
-        </app-button>
+        </base-button>
 
-        <app-button
+        <base-button
           @action="$emit('loadListResume')"
           :color="isOpenResume ? 'danger' : ''"
         >
           {{ isOpenResume ? 'Закрыть резюме' : 'Загрузить резюме' }}
-        </app-button>
+        </base-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import AppButton from './AppButton.vue'
+import BaseButton from '../BaseButton.vue'
 
 export default {
   emits: ['loadListComments', 'loadListResume'],
@@ -50,7 +50,7 @@ export default {
     },
   },
   components: {
-    AppButton,
+    BaseButton,
   },
 }
 </script>

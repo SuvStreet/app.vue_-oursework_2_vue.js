@@ -1,8 +1,8 @@
 <template>
-  <div class="subtitle">
-    <h2>
+  <div class="card-w100">
+    <p>
       {{ message }}
-    </h2>
+    </p>
     <slot></slot>
   </div>
 </template>
@@ -13,22 +13,16 @@ export default {
     message: {
       type: String,
       required: false,
-      default: 'Ваше имя',
-    },
-  },
+      default: 'Описание вашего резюме'
+    }
+  }
 }
 </script>
 
 <style scoped>
-.subtitle {
+/* .text {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-@media (max-width: 700px) {
-  .subtitle {
-    flex-direction: column;
-  }
-}
+} */
 </style>
