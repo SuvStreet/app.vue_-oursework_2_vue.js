@@ -145,7 +145,7 @@ export default {
           this.isLoader = true
 
           const { data } = await axios.get(
-            'https://jsonplaceholder.typicode.com/comments?_limit=41'
+            'https://jsonplaceholder.typicode.com/comments?_limit=1'
           )
 
           this.listComments = Object.keys(data).map((key) => {

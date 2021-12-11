@@ -82,11 +82,6 @@ export default {
   border-radius: 50%;
 }
 
-.information-person {
-  width: 100%;
-  margin: 0 10px;
-}
-
 .list-item .btn {
   margin-right: 0;
 }

@@ -318,6 +318,11 @@ h3 {
   background: rgba(0, 0, 0, 0.35);
 }
 
+.information-person {
+  width: 100%;
+  margin: 0 10px;
+}
+
 .loader {
   font-size: 10px;
   margin: 50px auto;
