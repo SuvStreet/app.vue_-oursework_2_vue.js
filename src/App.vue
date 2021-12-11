@@ -84,21 +84,16 @@ export default {
     // =================================== СОЗДАЁМ БЛОК РЕЗЮМЕ ===================================
     async submit(type, message) {
       try {
-        const response = await fetch(process.env.VUE_APP_URL_RESUME + '.json', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+        const { data } = await axios.post(
+          process.env.VUE_APP_URL_RESUME + '.json',
+          {
             type,
             message,
-          }),
-        })
-
-        const firebaseData = await response.json()
+          }
+        )
 
         this.blocks.push({
-          id: firebaseData.name,
+          id: data.name,
           type,
           message,
         })
