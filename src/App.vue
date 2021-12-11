@@ -84,19 +84,16 @@ export default {
     // =================================== СОЗДАЁМ БЛОК РЕЗЮМЕ ===================================
     async submit(type, message) {
       try {
-        const response = await fetch(
-          `https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/resume.json`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              type,
-              message,
-            }),
-          }
-        )
+        const response = await fetch(process.env.VUE_APP_URL_RESUME + '.json', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type,
+            message,
+          }),
+        })
 
         const firebaseData = await response.json()
 
@@ -118,7 +115,9 @@ export default {
     // =================================== ЗАГРУЖАЕМ НЕ СОХРАНЁННОЕ РЕЗЮМЕ ===================================
     async loadResume() {
       try {
-        const { data } = await axios.get(process.env.VUE_APP_URL_RESUME)
+        const { data } = await axios.get(
+          process.env.VUE_APP_URL_RESUME + '.json'
+        )
 
         this.blocks = Object.keys(data).map((key) => {
           return {
@@ -145,7 +144,7 @@ export default {
           this.isLoader = true
 
           const { data } = await axios.get(
-            'https://jsonplaceholder.typicode.com/comments?_limit=1'
+            'https://jsonplaceholder.typicode.com/comments?_limit=41'
           )
 
           this.listComments = Object.keys(data).map((key) => {
@@ -179,7 +178,9 @@ export default {
 
           this.isLoader = true
 
-          const { data } = await axios.get(process.env.VUE_APP_URL_SAVE_RESUME)
+          const { data } = await axios.get(
+            process.env.VUE_APP_URL_SAVE_RESUME + '.json'
+          )
 
           this.listResume = Object.keys(data).map((key) => {
             return {
@@ -204,16 +205,14 @@ export default {
     // =================================== УДАЛЯЕМ ОПРЕДЕЛЁННЫЙ БЛОК РЕЗЮМЕ ===================================
     async removeBlock(id) {
       try {
-        this.blocks = this.blocks.filter((block) => block.id !== id)
-
         if (this.isSave) {
-          await axios.delete(
-            `https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/resume/${id}.json`
-          )
+          await axios.delete(process.env.VUE_APP_URL_RESUME + `/${id}.json`)
           if (this.blocks.length === 0) {
             this.isSave = false
           }
         }
+
+        this.blocks = this.blocks.filter((block) => block.id !== id)
       } catch (error) {
         this.toast = {
           title: 'Ошибка',
@@ -226,18 +225,21 @@ export default {
     async removeResume(id) {
       try {
         const resumeId = this.listResume.find((blocks) => blocks.id === id)
-        await axios.delete(
-          `https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/save-resume/${id}.json`
-        )
+
+        await axios.delete(process.env.VUE_APP_URL_SAVE_RESUME + `/${id}.json`)
         this.listResume = this.listResume.filter((blocks) => blocks.id !== id)
 
         this.toast = {
           title: 'Успешно',
-          text: `Резюме "${resumeId[0].message}" удалено!`,
+          text: `Резюме "${
+            resumeId[0].message.length > 50
+              ? resumeId[0].type
+              : resumeId[0].message
+          }" удалено!`,
           type: 'success',
         }
 
-        if (this.blocks.length > 0) {
+        if (this.blocks.length) {
           this.blocks = []
           this.isCreate = true
         }
@@ -252,11 +254,9 @@ export default {
     // =================================== СОХРАНЯЕМ РЕЗЮМЕ ===================================
     async saveResume() {
       try {
-        await axios.delete(
-          'https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/resume.json'
-        )
+        await axios.delete(process.env.VUE_APP_URL_RESUME + '.json')
         const response = await fetch(
-          `https://vue-resume-database-default-rtdb.europe-west1.firebasedatabase.app/save-resume.json`,
+          process.env.VUE_APP_URL_SAVE_RESUME + '.json',
           {
             method: 'POST',
             headers: {
